@@ -8,67 +8,43 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class HttpClient {
+class HttpClient {
 
-int timeout;
+private int timeout;
 
 HttpClient(int timeout) {
     this.timeout = timeout;
 }
 
 String get(String url_s) throws IOException {
-    System.out.println("GET " + url_s);
-    try {
-        URL url = new URL(url_s);
-
-        final HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        con.setConnectTimeout(timeout);
-        con.setReadTimeout(timeout);
-
-        String result = readResponse(con);
-        System.out.println("\treturned: " + result);
-        return result;
-    } catch (MalformedURLException e) {
-        e.printStackTrace();
-        return null;
-    }
+    return request(url_s, "GET", null);
 }
 
 String delete(String url_s) throws IOException {
-    System.out.println("DELETE " + url_s);
-    try {
-        URL url = new URL(url_s);
-
-        final HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("DELETE");
-        con.setConnectTimeout(timeout);
-        con.setReadTimeout(timeout);
-
-        String result = readResponse(con);
-        System.out.println("\treturned: " + result);
-        return result;
-    } catch (MalformedURLException e) {
-        e.printStackTrace();
-        return null;
-    }
+    return request(url_s, "DELETE", null);
 }
 
 String post(String url_s, String data) throws IOException {
-    System.out.println("\tPOST " + data + " to url " + url_s);
+    return request(url_s, "POST", data);
+}
+
+private String request(String url_s, String method, String data) throws IOException {
+    System.out.println(method + ": " + url_s + (data == null ? "" : ": {" + data + "}"));
     try {
         URL url = new URL(url_s);
 
         final HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
+        con.setRequestMethod(method);
         con.setConnectTimeout(timeout);
         con.setReadTimeout(timeout);
 
-        con.setDoOutput(true);
-        final DataOutputStream out = new DataOutputStream(con.getOutputStream());
-        out.writeBytes(data);
-        out.flush();
-        out.close();
+        if (data != null) {
+            con.setDoOutput(true);
+            final DataOutputStream out = new DataOutputStream(con.getOutputStream());
+            out.writeBytes(data);
+            out.flush();
+            out.close();
+        }
 
         String result = readResponse(con);
         System.out.println("\treturned: " + result);
