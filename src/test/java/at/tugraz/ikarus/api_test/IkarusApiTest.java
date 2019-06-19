@@ -1,5 +1,6 @@
-package at.tugraz.ikarus.api;
+package at.tugraz.ikarus.api_test;
 
+import at.tugraz.ikarus.api.IkarusApi;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -123,8 +124,8 @@ public void testChange() throws IOException {
 public void testStat() throws IOException {
     IkarusApi.StatResult res = client.stat();
     assertNotNull("Result of Stat is null", res);
-    assertNotEquals("No objects found in DB.", 0, res.ids.length);
-    assertNotEquals("No s-collections found in DB.", 0, res.cols.size());
+    assertNotEquals("No objects found in DB.", 0, res.getIds().length);
+    assertNotEquals("No s-collections found in DB.", 0, res.getCols().size());
 }
 
 }

@@ -5,18 +5,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"WeakerAccess", "JavaDoc", "SpellCheckingInspection"})
 public class IkarusApi {
 
-/** A url of an Utilities server */
+/** A url of an Utilities server. */
 private final String url;
+/** Custom client for talking to Utilities. */
 private final HttpClient http;
 
 /**
+ * @param url A URL of Utilities server.
  *
+ * @throws RuntimeException, if URL is malformed.
  */
 public IkarusApi(String url) {
     http = new HttpClient(2000);
@@ -59,7 +61,7 @@ public String store(String data) throws IOException {
 }
 
 /**
- * Basic STORE
+ * STORE with validation
  *
  * @param data     Content to store in the Engine
  * @param validate If need Utilities server to validate passed JSON
@@ -95,14 +97,35 @@ public String get(String id) throws IOException {
 
 
 /**
+ * Basic CHANGE
+ * <p>
+ * Change value that is stored in object with specified id,
+ * without validating new value as JSON.
  *
+ * @param id   Identifier of object to update.
+ * @param data New data to store.
+ *
+ * @return true, if changed successfully, false otherwise
+ *
+ * @throws IOException
  */
 public boolean change(String id, String data) throws IOException {
     return change(id, data, false);
 }
 
 /**
+ * CHANGE with validation
+ * <p>
+ * Change value that is stored in object with specified id,
+ * without validating new value as JSON.
  *
+ * @param id       Identifier of object to update.
+ * @param data     New data to store.
+ * @param validate true, if need to validate JSON before storing.
+ *
+ * @return true, if changed successfully, false otherwise
+ *
+ * @throws IOException
  */
 public boolean change(String id, String data, boolean validate) throws IOException {
     String s = URLEncoder.encode(data, "UTF-8");
@@ -239,7 +262,7 @@ public StatResult stat() throws IOException {
     StatResult result = new StatResult();
     result.ids = ids.split(", ");
     String[] tmp = cols.split(", ");
-    for (String s: tmp) {
+    for (String s : tmp) {
         int i = s.indexOf("=");
         result.cols.put(s.substring(0, i), s.substring(i + 1));
     }
@@ -251,8 +274,16 @@ public StatResult stat() throws IOException {
  * A class to represent a result of STAT request.
  * It contains a list of object ids and a map of pairs: S-collection id to its name.
  */
-class StatResult {
+public class StatResult {
     String[] ids;
     Map<String, String> cols = new HashMap<>();
+
+    public String[] getIds() {
+        return ids;
+    }
+
+    public Map<String, String> getCols() {
+        return cols;
+    }
 }
 }
